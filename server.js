@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
+const mercadopago = require("mercadopago");
 const mongoose = require("mongoose");
 
 mongoose.connect("mongodb+srv://eduardoatendee_db_user:Eduardo123456@cluster0.gnuptpr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
@@ -9,6 +10,9 @@ mongoose.connect("mongodb+srv://eduardoatendee_db_user:Eduardo123456@cluster0.gn
 
 const app = express();
 app.use(bodyParser.json());
+mercadopago.configure({
+  access_token: process.env.MP_ACCESS_TOKEN
+});
 
 app.get("/", (req, res) => {
   res.send("API Cred Drive funcionando");
