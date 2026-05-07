@@ -17,7 +17,21 @@ app.get("/", (req, res) => {
 const WHATSAPP_NUMBER = "5573981355575";
 
 
+app.get("/teste", (req, res) => {
+  res.send(`
+    <h2>Teste Cred Drive</h2>
 
+    <form method="POST" action="/cadastro">
+      <input type="text" name="nome" placeholder="Nome"><br><br>
+
+      <input type="text" name="cpf" placeholder="CPF"><br><br>
+
+      <input type="text" name="telefone" placeholder="Telefone"><br><br>
+
+      <button type="submit">Enviar</button>
+    </form>
+  `);
+});
 app.post("/cadastro", async (req, res) => {
   const { nome, cpf, telefone } = req.body;
 
