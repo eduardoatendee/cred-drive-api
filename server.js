@@ -13,7 +13,30 @@ app.use(bodyParser.json());
 mercadopago.configure({
   access_token: process.env.MP_ACCESS_TOKEN
 });
+app.get("/pix", async (req, res) => {
 
+    const pagamento = await mercadopago.preferences.create({
+       items: [
+{
+    title: "Teste Cred Drive",
+    quantity: 1,
+    currency_id: "BRL",
+    unit_price: 5.00
+}
+]
+    });
+
+    const link = pagamento.body.init_point;
+
+    res.send(`
+    <h1>Pagamento Gerado</h1>
+
+    <a href="${link}" target="_blank">
+        PAGAR COM MERCADO PAGO
+    </a>
+`);
+
+});
 app.get("/", (req, res) => {
   res.send("API Cred Drive funcionando");
 });
