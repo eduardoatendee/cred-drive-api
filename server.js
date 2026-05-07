@@ -10,7 +10,13 @@ mongoose.connect("mongodb+srv://eduardoatendee_db_user:Eduardo123456@cluster0.gn
 const app = express();
 app.use(bodyParser.json());
 
+app.get("/", (req, res) => {
+  res.send("API Cred Drive funcionando");
+});
+
 const WHATSAPP_NUMBER = "5573981355575";
+
+
 
 app.post("/cadastro", async (req, res) => {
   const { nome, cpf, telefone } = req.body;
