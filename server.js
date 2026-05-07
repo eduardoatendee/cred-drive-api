@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const axios = require("axios");
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb+srv://eduardoatendee_db_user:Eduardo123@cluster0.gnuptpr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+mongoose.connect("mongodb+srv://eduardoatendee_db_user:Eduardo123456@cluster0.gnuptpr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 .then(() => console.log("MongoDB conectado"))
 .catch(err => console.log(err));
 
