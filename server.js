@@ -1,7 +1,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
+const mongoose = require("mongoose");
 
+
+.then(() => console.log("MongoDB conectado"))
+.catch(err => console.log(err));
 const app = express();
 app.use(bodyParser.json());
 
