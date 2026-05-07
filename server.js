@@ -3,9 +3,10 @@ const bodyParser = require("body-parser");
 const axios = require("axios");
 const mongoose = require("mongoose");
 
-
+mongoose.connect("mongodb+srv://eduardoatendee_db_user:8Eh0U09LL1S4K3md@cluster0.gnuptr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 .then(() => console.log("MongoDB conectado"))
 .catch(err => console.log(err));
+
 const app = express();
 app.use(bodyParser.json());
 
