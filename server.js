@@ -26,7 +26,7 @@ const preference = new Preference(client);
 ]
     });
 
-    const link = pagamento.body.init_point;
+    const link = pagamento.init_point;
 
     res.send(`
     <h1>Pagamento Gerado</h1>
