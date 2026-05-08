@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
-const { MercadoPagoConfig, Preference } = require("mercadopago");
+const mercadopago = require("mercadopago");
 const mongoose = require("mongoose");
 
 mongoose.connect("mongodb+srv://eduardoatendee_db_user:Eduardo123456@cluster0.gnuptpr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
@@ -11,11 +11,11 @@ mongoose.connect("mongodb+srv://eduardoatendee_db_user:Eduardo123456@cluster0.gn
 const app = express();
 app.use(bodyParser.json());
 
-const client = new MercadoPagoConfig({
-    accessToken: process.env.MP_ACCESS_TOKEN
+mercadopago.configure({
+access_token: process.env.MP_ACCESS_TOKEN
 });
 
-const preferenceClient = new Preference(client);
+
 
 app.get("/pix", async (req, res) => {
 
@@ -30,11 +30,11 @@ const preference = {
     ]
 };
 
-const pagamento = await preferenceClient.create({
+const pagamento = await mercadopago.preferences.create({
   body: preference
 });
 
-    const link = pagamento.init_point;
+    const link = pagamento.body.init_point;
 
     res.send(`
     <h1>Pagamento Gerado</h1>
