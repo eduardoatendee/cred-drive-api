@@ -15,20 +15,18 @@ mercadopago.configure({
 });
 app.get("/pix", async (req, res) => {
 
-const pagamento = await mercadopago.preferences.create({
-  body: {
-    items: [
-      {
-        title: "Teste Cred Drive",
-        quantity: 1,
-        currency_id: "BRL",
-        unit_price: 5.00
-  }
- ]
- }
- });
+const pagamento = await mercadopago.preference.create({
+  items: [
+    {
+      title: "Teste Cred Drive",
+      quantity: 1,
+      currency_id: "BRL",
+      unit_price: 5.00
+    }
+  ]
+});
 
-    const link = pagamento.body.init_point;
+    const link = pagamento.init_point;
 
     res.send(`
     <h1>Pagamento Gerado</h1>
