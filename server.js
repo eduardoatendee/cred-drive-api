@@ -13,17 +13,27 @@ app.use(bodyParser.json());
 mercadopago.configure({
   access_token: process.env.MP_ACCESS_TOKEN
 });
+const client = new MercadoPagoConfig({
+    accessToken: process.env.MP_ACCESS_TOKEN
+});
+
+const preferenceClient = new Preference(client);
+
 app.get("/pix", async (req, res) => {
 
-const pagamento = await mercadopago.preference.create({
-  items: [
-    {
-      title: "Teste Cred Drive",
-      quantity: 1,
-      currency_id: "BRL",
-      unit_price: 5.00
-    }
-  ]
+const preference = {
+    items: [
+        {
+            title: "Teste Cred Drive",
+            quantity: 1,
+            currency_id: "BRL",
+            unit_price: 5
+        }
+    ]
+};
+
+const pagamento = await preferenceClient.create({
+    body: preference
 });
 
     const link = pagamento.init_point;
