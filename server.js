@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
-const mercadopago = require("mercadopago");
+const { MercadoPagoConfig, Preference } = require("mercadopago");
 const mongoose = require("mongoose");
 
 mongoose.connect("mongodb+srv://eduardoatendee_db_user:Eduardo123456@cluster0.gnuptpr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
@@ -10,9 +10,7 @@ mongoose.connect("mongodb+srv://eduardoatendee_db_user:Eduardo123456@cluster0.gn
 
 const app = express();
 app.use(bodyParser.json());
-mercadopago.configure({
-  access_token: process.env.MP_ACCESS_TOKEN
-});
+
 const client = new MercadoPagoConfig({
     accessToken: process.env.MP_ACCESS_TOKEN
 });
@@ -33,7 +31,7 @@ const preference = {
 };
 
 const pagamento = await preferenceClient.create({
-    body: preference
+  body: preference
 });
 
     const link = pagamento.init_point;
@@ -83,7 +81,7 @@ Entre em contato com o cliente.
 `;
 
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensagem)}`;
-
+  
   try {
     await axios.get(url);
     res.send("Enviado para WhatsApp!");
