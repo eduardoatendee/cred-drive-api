@@ -15,7 +15,7 @@ mercadopago.configure({
 });
 app.get("/pix", async (req, res) => {
 
-const pagamento = await mercadopago.preference.create({
+const pagamento = await mercadopago.preferences.create({
   body: {
     items: [
       {
