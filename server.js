@@ -1,6 +1,7 @@
 const express    = require("express");
 const bodyParser = require("body-parser");
 const mongoose   = require("mongoose");
+const path       = require("path");
 
 let mercadopago = null;
 const MP_TOKEN  = process.env.MP_ACCESS_TOKEN || process.env.MERCADOPAGO_ACCESS_TOKEN;
@@ -42,12 +43,24 @@ const Pagamento = mongoose.model("Pagamento", pagamentoSchema);
 const app = express();
 app.use(bodyParser.json());
 
+// ========== SERVIR ARQUIVOS ESTÁTICOS ==========
+app.use(express.static(path.join(__dirname, "public")));
+
 const requireMP = (req, res, next) => {
   if (!mercadopago) {
     return res.status(503).json({ erro: "MercadoPago não configurado." });
   }
   next();
 };
+
+// ========== ADMIN LOGIN ==========
+app.post("/admin/login", (req, res) => {
+  const { email, senha } = req.body;
+  if (email === "admin@creddrive.com" && senha === "123456") {
+    return res.json({ sucesso: true });
+  }
+  return res.status(401).json({ sucesso: false, erro: "Credenciais inválidas" });
+});
 
 app.get("/health", (req, res) => {
   res.json({
@@ -163,6 +176,10 @@ app.get("/pagamentos", async (req, res) => {
     return res.status(500).json({ erro: "Erro ao listar" });
   }
 });
+
+// ========== ROTAS HTML ==========
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+app.get("/dashboard", (req, res) => res.sendFile(path.join(__dirname, "public", "dashboard.html")));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 CredDrive API rodando na porta ${PORT}`));
