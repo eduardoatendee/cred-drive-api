@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CredDrive</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: sans-serif;
+      background: #f1f5f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: white;
+      padding: 48px 40px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    h1 { font-size: 28px; font-weight: 800; text-align: center; margin-bottom: 4px; }
+    .sub { text-align: center; color: #64748b; margin-bottom: 32px; }
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: #0f172a; }
+    button {
+      width: 100%;
+      padding: 16px;
+      background: #0f172a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover { background: #1e293b; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .erro {
+      color: #ef4444;
+      text-align: center;
+      margin-top: 12px;
+      font-size: 14px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>CredDrive</h1>
+    <p class="sub">login para continuar</p>
+    <input type="email" id="email" placeholder="E-mail" />
+    <input type="password" id="senha" placeholder="Senha" onkeydown="if(event.key==='Enter') entrar()" />
+    <button id="btn" onclick="entrar()">Entrar</button>
+    <p class="erro" id="erro">Email ou senha incorretos.</p>
+  </div>
+
+  <script>
+    async function entrar() {
+      const email = document.getElementById('email').value.trim();
+      const senha = document.getElementById('senha').value;
+      const btn   = document.getElementById('btn');
+      const erro  = document.getElementById('erro');
+
+      if (!email || !senha) {
+        erro.textContent = 'Preencha email e senha.';
+        erro.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Entrando...';
+      erro.style.display = 'none';
+
+      try {
+        const res  = await fetch('/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, senha })
+        });
+        const data = await res.json();
+
+        if (data.sucesso) {
+          window.location.href = '/dashboard';
+        } else {
+          erro.textContent = 'Email ou senha incorretos.';
+          erro.style.display = 'block';
+        }
+      } catch (e) {
+        erro.textContent = 'Erro ao conectar ao servidor.';
+        erro.style.display = 'block';
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Entrar';
+    }
+  </script>
+</body>
+</html>
