@@ -1,97 +1,54 @@
-const express = require("express");
+const express    = require("express");
 const bodyParser = require("body-parser");
-const axios = require("axios");
-const mercadopago = require("mercadopago");
-const mongoose = require("mongoose");
+const axios      = require("axios");
+const mongoose   = require("mongoose");
 
-mongoose.connect("mongodb+srv://eduardoatendee_db_user:Eduardo123456@cluster0.gnuptpr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-.then(() => console.log("MongoDB conectado"))
-.catch(err => console.log(err));
+// ─── MercadoPago – inicialização OPCIONAL ────────────────────────────────────
+let mercadopago = null;
+const MP_TOKEN = process.env.MP_ACCESS_TOKEN || process.env.MERCADOPAGO_ACCESS_TOKEN;
+
+if (MP_TOKEN) {
+  try {
+    mercadopago = require("mercadopago");
+    mercadopago.configure({ access_token: MP_TOKEN });
+    console.log("✅ MercadoPago configurado com sucesso");
+  } catch (err) {
+    console.error("❌ Erro ao configurar MercadoPago:", err.message);
+    mercadopago = null;
+  }
+} else {
+  console.warn("⚠️  MP_ACCESS_TOKEN não definido — MercadoPago DESATIVADO");
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB conectado"))
+  .catch(err => console.log(err));
 
 const app = express();
 app.use(bodyParser.json());
 
-mercadopago.configure({
-access_token: process.env.MP_ACCESS_TOKEN
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    mercadopago: MP_TOKEN ? "configurado" : "não configurado",
+    timestamp: new Date().toISOString(),
+  });
 });
 
-
-
-app.get("/pix", async (req, res) => {
-
-const preference = {
-    items: [
-        {
-            title: "Teste Cred Drive",
-            quantity: 1,
-            currency_id: "BRL",
-            unit_price: 5
-        }
-    ]
+const requireMercadoPago = (req, res, next) => {
+  if (!mercadopago) {
+    return res.status(503).json({
+      error: "MercadoPago não configurado. Defina MP_ACCESS_TOKEN no Render.",
+    });
+  }
+  next();
 };
 
-const pagamento = await mercadopago.preferences.create({
-  body: preference
-});
-
-    const link = pagamento.body.init_point;
-
-    res.send(`
-    <h1>Pagamento Gerado</h1>
-
-    <a href="${link}" target="_blank">
-        PAGAR COM MERCADO PAGO
-    </a>
-`);
-
-});
-app.get("/", (req, res) => {
-  res.send("API Cred Drive funcionando");
-});
-
-const WHATSAPP_NUMBER = "5573981355575";
-
-
-app.get("/teste", (req, res) => {
-  res.send(`
-    <h2>Teste Cred Drive</h2>
-
-    <form method="POST" action="/cadastro">
-      <input type="text" name="nome" placeholder="Nome"><br><br>
-
-      <input type="text" name="cpf" placeholder="CPF"><br><br>
-
-      <input type="text" name="telefone" placeholder="Telefone"><br><br>
-
-      <button type="submit">Enviar</button>
-    </form>
-  `);
-});
-app.post("/cadastro", async (req, res) => {
-  const { nome, cpf, telefone } = req.body;
-
-  const mensagem = `
-🚀 NOVO CADASTRO - CRED DRIVE
-
-👤 Nome: ${nome}
-📄 CPF: ${cpf}
-📱 Telefone: ${telefone}
-
-Entre em contato com o cliente.
-`;
-
-  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensagem)}`;
-  
-  try {
-    await axios.get(url);
-    res.send("Enviado para WhatsApp!");
-  } catch (error) {
-    res.status(500).send("Erro ao enviar");
-  }
-});
+// Suas rotas aqui...
 
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
-  console.log("Servidor rodando...");
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });
